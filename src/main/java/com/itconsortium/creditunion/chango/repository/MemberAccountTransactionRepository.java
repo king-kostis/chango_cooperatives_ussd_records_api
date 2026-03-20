@@ -20,7 +20,7 @@ public interface MemberAccountTransactionRepository extends JpaRepository<Member
             FROM member_account_transaction ma
             JOIN member m ON m.memberId = ma.memberId
             RIGHT JOIN group g ON g.groupId = m.groupId
-            WHERE m.msisdn = :msisdn AND g.
+            WHERE m.msisdn = :msisdn AND g.groupId = m.groupId
             ORDER BY .transactionDate DESC
             LIMIT 5
             """, nativeQuery = true)

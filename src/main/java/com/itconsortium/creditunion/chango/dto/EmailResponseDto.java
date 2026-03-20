@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmailResponseDto {
     private String status;
-    private String
+    private String message;
 }

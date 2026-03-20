@@ -15,7 +15,7 @@ public class MemberAccountTransactionService {
     private MemberAccountTransactionRepository memberAccountTransactionRepository;
 
     public List<MemberAccountTransactionSummaryDto> getLast5Statements(Long groupId, String msisdn){
-        List<MemberAccountTransactionSummaryDto> transactions = memberAccountTransactionRepository.findLast5Transactions(groupdId, msisdn);
+        List<MemberAccountTransactionSummaryDto> transactions = memberAccountTransactionRepository.findLast5Transactions(groupId, msisdn);
 
         if(transactions.isEmpty()) {
             throw new NoTransactionsAvailableException("There are no statement records");
