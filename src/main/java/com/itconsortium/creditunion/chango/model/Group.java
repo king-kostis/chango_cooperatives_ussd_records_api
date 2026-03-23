@@ -8,47 +8,47 @@ import java.time.LocalDate;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "groups")
+@Table(name = "GROUPS")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "groupId")
+    @Column(name = "GROUP_ID")
     private Long groupId;
 
-    @Column(name = "groupName")
+    @Column(name = "GROUP_NAME")
     private String groupName;
 
-    @Column(name = "groupType")
+    @Column(name = "GROUP_TYPE")
     private String groupType;
 
-    @Column(name = "groupIconPath")
+    @Column(name = "GROUP_ICON_PATH")
     private String groupIconPath;
 
-    @Column(name = "countryId")
+    @Column(name = "COUNTRY_ID")
     private Long countryId;
 
-    @Column(name = "currency")
+    @Column(name = "CURRENCY")
     private String currency;
 
-    @Column(name = "status")
+    @Column(name = "STATUS")
     private String status;
 
-    @Column(name = "approve")
+    @Column(name = "APPROVE")
     private String approve;
 
-    @Column(name = "description")
+    @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "creatorId")
+    @Column(name = "CREATOR_ID")
     private Long creatorId;
 
-    @Column(name = "created")
+    @Column(name = "CREATED")
     private LocalDate created;
 
-    @Column(name = "modified")
+    @Column(name = "MODIFIED")
     private LocalDate modified;
 
-    @Column(name = "deleted")
+    @Column(name = "DELETED")
     private LocalDate deleted;
 }
 

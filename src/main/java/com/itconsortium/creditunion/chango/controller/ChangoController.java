@@ -1,12 +1,13 @@
 package com.itconsortium.creditunion.chango.controller;
 
 import com.itconsortium.creditunion.chango.dto.EmailRequestDto;
-import com.itconsortium.creditunion.chango.projections.MemberAccountTransactionSummaryDto;
-import com.itconsortium.creditunion.chango.projections.SubscriptionSummaryDto;
+import com.itconsortium.creditunion.chango.dto.EmailResponseDto;
+import com.itconsortium.creditunion.chango.dto.RecurringDetailsDto;
+import com.itconsortium.creditunion.chango.projections.MemberTransactionSummaryDto;
+import com.itconsortium.creditunion.chango.projections.RecurringDebitSummary;
 import com.itconsortium.creditunion.chango.services.EmailService;
-import com.itconsortium.creditunion.chango.services.MemberAccountTransactionService;
-import com.itconsortium.creditunion.chango.services.SubscriptionService;
-import com.mailjet.client.MailjetResponse;
+import com.itconsortium.creditunion.chango.services.MemberTransactionService;
+import com.itconsortium.creditunion.chango.services.RecurringDebitService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,31 +21,32 @@ import java.util.List;
 public class ChangoController {
 
     @Autowired
-    private MemberAccountTransactionService memberAccountTransactionService;
+    private MemberTransactionService memberTransactionService;
 
     @Autowired
-    private SubscriptionService subscriptionService;
+    private RecurringDebitService recurringDebitService;
 
     @Autowired
     private EmailService emailService;
 
     @GetMapping("/miniStatement/{groupId}/{msisdn}")
-    public ResponseEntity<List<MemberAccountTransactionSummaryDto>> getLast5Statements(@PathVariable Long groupId, @PathVariable String msisdn){
-        return ResponseEntity.ok(memberAccountTransactionService.getLast5Statements(groupId, msisdn));
+    public ResponseEntity<List<MemberTransactionSummaryDto>> getLast5Statements(@PathVariable Long groupId, @PathVariable String msisdn){
+        return ResponseEntity.ok(memberTransactionService.getLast5Statements(groupId, msisdn));
     }
 
     @PostMapping("/sendEmail")
-    public ResponseEntity<MailjetResponse> sendStatementsEmail(@RequestBody EmailRequestDto emailRequestDto){
+    public ResponseEntity<EmailResponseDto> sendStatementsEmail(@RequestBody EmailRequestDto emailRequestDto){
         String emailAddress = emailRequestDto.getEmailAddress();
-        return ResponseEntity.ok(emailService.sendEmail(emailAddress));
+        Long groupId = emailRequestDto.getGroupId();
+        return ResponseEntity.ok(emailService.sendEmail(emailAddress, groupId));
     }
 
     @GetMapping("/subscriptionById/{id}")
-    public ResponseEntity<SubscriptionSummaryDto> getSubscriptionById(@PathVariable Long id){
-        return ResponseEntity.ok(subscriptionService.getSubscriptionDetailsById(id));
+    public ResponseEntity<RecurringDetailsDto> getSubscriptionById(@PathVariable Long id){
+        return ResponseEntity.ok(recurringDebitService.getRecurringDetailsById(id));
     }
     @GetMapping("/subscriptionByMsisdn/{msisdn}")
-    public ResponseEntity<SubscriptionSummaryDto> getSubcriptionByMsisdn(@PathVariable String msisdn){
-        return ResponseEntity.ok(subscriptionService.getSubscriptionDetailsByMsisdn(msisdn));
+    public ResponseEntity<RecurringDetailsDto> getSubscriptionByMsisdn(@PathVariable String msisdn){
+        return ResponseEntity.ok(recurringDebitService.getRecurringDetailsByMsisdn(msisdn));
     }
 }

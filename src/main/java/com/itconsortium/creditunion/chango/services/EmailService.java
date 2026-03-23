@@ -1,11 +1,12 @@
 package com.itconsortium.creditunion.chango.services;
 
+import com.itconsortium.creditunion.chango.dto.EmailResponseDto;
 import com.itconsortium.creditunion.chango.exceptions.EmailSendingException;
 import com.itconsortium.creditunion.chango.exceptions.NoTransactionsAvailableException;
-import com.itconsortium.creditunion.chango.projections.MemberAccountTransactionSummaryDto;
-import com.itconsortium.creditunion.chango.repository.MemberAccountTransactionRepository;
+import com.itconsortium.creditunion.chango.model.Member;
+import com.itconsortium.creditunion.chango.projections.MemberTransactionSummaryDto;
+import com.itconsortium.creditunion.chango.repository.MemberTransactionRepository;
 import com.itconsortium.creditunion.chango.repository.MemberRepository;
-import com.itconsortium.creditunion.chango.repository.SubscriptionRepository;
 import com.mailjet.client.errors.MailjetException;
 import com.mailjet.client.errors.MailjetSocketTimeoutException;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,10 @@ import java.util.List;
 @Service
 public class EmailService {
     @Autowired
-    private SubscriptionRepository subscriptionRepository;
+    private RecurringDebitService recurringDebitService;
 
     @Autowired
-    private MemberAccountTransactionRepository memberAccountTransactionRepository;
+    private MemberTransactionRepository memberTransactionRepository;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -41,13 +42,15 @@ public class EmailService {
     @Value("${mailjet.apikey.private}")
     private String API_KEY_PRIVATE;
 
-    private List<MemberAccountTransactionSummaryDto> getLast90DaysStatements(String msisdn) {
+
+
+    private List<MemberTransactionSummaryDto> getLast90DaysStatements(String msisdn, Long groupId) {
         log.info("Getting statements of last 90 days");
-        //Get a date 90 days in the past
+        //Return a date 90 days from current days
         LocalDate boundaryDate = LocalDate.now().minusDays(90);
 
-        //Returns the list of transactions after the boundary date for a specific member within a group
-        List<MemberAccountTransactionSummaryDto> transactions = memberAccountTransactionRepository.findByTransactionDate(boundaryDate, msisdn);
+        //Return the list of transactions after the boundary date
+        List<MemberTransactionSummaryDto> transactions = memberTransactionRepository.findByTransactionDate(boundaryDate, msisdn, groupId);
 
         if (transactions.isEmpty()) {
             throw new NoTransactionsAvailableException("There are no transaction records");
@@ -56,20 +59,24 @@ public class EmailService {
         }
     }
 
-    private String getEmailMessage(List<MemberAccountTransactionSummaryDto> memberAccountTransactionSummaryDtos) {
+    //Method to generate email message
+    private String getEmailMessage(List<MemberTransactionSummaryDto> memberTransactionSummaryDtos) {
         String emailMessage = "";
 
-        for (MemberAccountTransactionSummaryDto statement : memberAccountTransactionSummaryDtos) {
-            emailMessage += "On " + statement.getTransactionDate() +
-                    "\nTransaction Type: " + statement.getTransactionType() +
-                    "\nAmount Transacted: GHS " + statement.getAmount() + "\n\n";
+        for (var transaction : memberTransactionSummaryDtos) {
+            emailMessage += "On " + transaction.getCreated() +
+                    "\nTransaction Type: " + transaction.getTransactionType() +
+                    "\nAmount Transacted: " + transaction.getMemberCurrency() + " " + transaction.getAmount() + "\n\n";
         }
         return emailMessage;
     }
 
-    public MailjetResponse sendEmail(String emailAddress) {
-        String msisdn = memberRepository.findMemberByEmailAddress().getMsisdn();
-        String emailMessage = getEmailMessage(getLast90DaysStatements(msisdn));
+    public EmailResponseDto sendEmail(String emailAddress, Long groupId) {
+        Member member = memberRepository.findMemberByEmailAddress(emailAddress);
+
+        String msisdn = member.getMsisdn();
+        String emailMessage = getEmailMessage(getLast90DaysStatements(msisdn, groupId));
+        String memberName = member.getFirstName();
 
         try {
             MailjetClient client = new MailjetClient(API_KEY_PUBLIC, API_KEY_PRIVATE, new ClientOptions("v3.1"));
@@ -82,13 +89,17 @@ public class EmailService {
                                     .put(Emailv31.Message.TO, new JSONArray()
                                             .put(new JSONObject()
                                                     .put("Email", emailAddress)
-                                                    .put("Name", "")))
+                                                    .put("Name", memberName)))
                                     .put(Emailv31.Message.SUBJECT, "Testing")
-                                    .put(Emailv31.Message.TEXTPART, "STATEMENTS\n" + emailMessage)
+                                    .put(Emailv31.Message.TEXTPART, "TRANSACTIONS\n\n" + emailMessage)
                             )
                     );
             MailjetResponse response = client.post(request);
-            return response;
+            if(response.getStatus() == 200){
+                return new EmailResponseDto("succesful", "Email sent to " + emailAddress);
+            } else {
+                throw  new EmailSendingException("Failed to sent email");
+            }
         } catch (MailjetException | MailjetSocketTimeoutException e){
             throw new EmailSendingException("Failed to send email " + e.getMessage());
         }
