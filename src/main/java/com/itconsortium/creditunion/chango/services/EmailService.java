@@ -94,14 +94,15 @@ public class EmailService {
                                     .put(Emailv31.Message.TEXTPART, "TRANSACTIONS\n\n" + emailMessage)
                             )
                     );
+
             MailjetResponse response = client.post(request);
-            if(response.getStatus() == 200){
-                return new EmailResponseDto("succesful", "Email sent to " + emailAddress);
-            } else {
-                throw  new EmailSendingException("Failed to sent email");
+            if(response.getStatus() != 200){
+                return new EmailResponseDto("failed", "Email not sent");
             }
+            return new EmailResponseDto("successful", "Email sent to " + emailAddress);
+
         } catch (MailjetException | MailjetSocketTimeoutException e){
-            throw new EmailSendingException("Failed to send email " + e.getMessage());
+            throw new EmailSendingException(e.getMessage());
         }
     }
 }

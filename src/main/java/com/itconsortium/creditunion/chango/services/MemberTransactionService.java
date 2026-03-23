@@ -14,7 +14,7 @@ public class MemberTransactionService {
     @Autowired
     private MemberTransactionRepository memberTransactionRepository;
 
-    public List<MemberTransactionSummaryDto> getLast5Statements(Long groupId, String msisdn){
+    public List<MemberTransactionSummaryDto> getLast5Transactions(Long groupId, String msisdn){
         List<MemberTransactionSummaryDto> transactions = memberTransactionRepository.findLast5Transactions(groupId, msisdn);
 
         if(transactions.isEmpty()) {

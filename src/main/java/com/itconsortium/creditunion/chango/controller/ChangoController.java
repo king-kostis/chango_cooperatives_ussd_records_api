@@ -4,7 +4,6 @@ import com.itconsortium.creditunion.chango.dto.EmailRequestDto;
 import com.itconsortium.creditunion.chango.dto.EmailResponseDto;
 import com.itconsortium.creditunion.chango.dto.RecurringDetailsDto;
 import com.itconsortium.creditunion.chango.projections.MemberTransactionSummaryDto;
-import com.itconsortium.creditunion.chango.projections.RecurringDebitSummary;
 import com.itconsortium.creditunion.chango.services.EmailService;
 import com.itconsortium.creditunion.chango.services.MemberTransactionService;
 import com.itconsortium.creditunion.chango.services.RecurringDebitService;
@@ -30,8 +29,8 @@ public class ChangoController {
     private EmailService emailService;
 
     @GetMapping("/miniStatement/{groupId}/{msisdn}")
-    public ResponseEntity<List<MemberTransactionSummaryDto>> getLast5Statements(@PathVariable Long groupId, @PathVariable String msisdn){
-        return ResponseEntity.ok(memberTransactionService.getLast5Statements(groupId, msisdn));
+    public ResponseEntity<List<MemberTransactionSummaryDto>> getLast5Transactions(@PathVariable Long groupId, @PathVariable String msisdn){
+        return ResponseEntity.ok(memberTransactionService.getLast5Transactions(groupId, msisdn));
     }
 
     @PostMapping("/sendEmail")
@@ -45,6 +44,7 @@ public class ChangoController {
     public ResponseEntity<RecurringDetailsDto> getSubscriptionById(@PathVariable Long id){
         return ResponseEntity.ok(recurringDebitService.getRecurringDetailsById(id));
     }
+
     @GetMapping("/subscriptionByMsisdn/{msisdn}")
     public ResponseEntity<RecurringDetailsDto> getSubscriptionByMsisdn(@PathVariable String msisdn){
         return ResponseEntity.ok(recurringDebitService.getRecurringDetailsByMsisdn(msisdn));

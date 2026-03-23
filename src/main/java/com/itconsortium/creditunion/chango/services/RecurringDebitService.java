@@ -15,7 +15,8 @@ public class RecurringDebitService {
     @Autowired
     private RecurringDebitRepository recurringDebitRepository;
 
-    private String getRecurringDebitLength(RecurringDebitSummary recurringDebitSummary){
+    //Method to get number of months till debit recurrence expires
+    private String getRecurringDebitDuration(RecurringDebitSummary recurringDebitSummary){
         LocalDate startDate = LocalDate.parse(recurringDebitSummary.getStartDate());
         LocalDate endDate = LocalDate.parse(recurringDebitSummary.getEndDate());
 
@@ -26,21 +27,25 @@ public class RecurringDebitService {
     public RecurringDetailsDto getRecurringDetailsById(Long id){
         RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findSubscriptionById(id)
                 .orElseThrow(() -> new RecurringDebitsNotFoundException("The recurring details do not exist"));
+
+        //Initializing DTO object for transferring recurring details with recurrence duration included
         RecurringDetailsDto recurringDetailsDto = new RecurringDetailsDto(
                 recurringDebitSummary.getGroupName(),
                 recurringDebitSummary.getFrequency(),
-                getRecurringDebitLength(recurringDebitSummary)
+                getRecurringDebitDuration(recurringDebitSummary)
         );
         return recurringDetailsDto;
     }
 
+    //Same as previous method but with msisdn
     public RecurringDetailsDto getRecurringDetailsByMsisdn(String msisdn){
         RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findSubscriptionSummaryByMsisdn(msisdn)
                 .orElseThrow(() -> new RecurringDebitsNotFoundException("The recurring details do not exist"));
+
         RecurringDetailsDto recurringDetailsDto = new RecurringDetailsDto(
                 recurringDebitSummary.getGroupName(),
                 recurringDebitSummary.getFrequency(),
-                getRecurringDebitLength(recurringDebitSummary)
+                getRecurringDebitDuration(recurringDebitSummary)
         );
         return recurringDetailsDto;
     }
