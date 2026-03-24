@@ -20,15 +20,16 @@ public class RecurringDebitService {
         LocalDate startDate = LocalDate.parse(recurringDebitSummary.getStartDate());
         LocalDate endDate = LocalDate.parse(recurringDebitSummary.getEndDate());
 
+        //Convert no. of months to string
         String monthsBetween = "" + ChronoUnit.MONTHS.between(startDate, endDate) + " months";
         return monthsBetween;
     }
 
     public RecurringDetailsDto getRecurringDetailsById(Long id){
-        RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findSubscriptionById(id)
+        RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findRecurringDetailsById(id)
                 .orElseThrow(() -> new RecurringDebitsNotFoundException("The recurring details do not exist"));
 
-        //Initializing DTO object for transferring recurring details with recurrence duration included
+        //Initialize DTO object for transferring recurring details with recurrence duration included
         RecurringDetailsDto recurringDetailsDto = new RecurringDetailsDto(
                 recurringDebitSummary.getGroupName(),
                 recurringDebitSummary.getFrequency(),
@@ -39,7 +40,7 @@ public class RecurringDebitService {
 
     //Same as previous method but with msisdn
     public RecurringDetailsDto getRecurringDetailsByMsisdn(String msisdn){
-        RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findSubscriptionSummaryByMsisdn(msisdn)
+        RecurringDebitSummary recurringDebitSummary = recurringDebitRepository.findRecurringDetailsByMsisdn(msisdn)
                 .orElseThrow(() -> new RecurringDebitsNotFoundException("The recurring details do not exist"));
 
         RecurringDetailsDto recurringDetailsDto = new RecurringDetailsDto(

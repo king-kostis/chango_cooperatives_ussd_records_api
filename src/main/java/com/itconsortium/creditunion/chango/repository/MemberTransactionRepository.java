@@ -12,6 +12,11 @@ import java.util.List;
 
 @Repository
 public interface MemberTransactionRepository extends JpaRepository<MemberTransaction, Long> {
+    /***
+     * Query to find last 5 transactions made by member within a group
+     * Parameters are groupId and msisdn
+     */
+
     @Query(value = """
             SELECT
                 mt.CREATED AS created,
@@ -29,6 +34,10 @@ public interface MemberTransactionRepository extends JpaRepository<MemberTransac
     List<MemberTransactionSummaryDto> findLast5Transactions(@Param("groupId") Long groupId, @Param("msisdn") String msisdn);
 
 
+    /***
+     * Query to find transactions within the last 90 days within a group
+     * Parameters are date(90 days from now for comparison), groupId and msisdn
+     */
     @Query(value = """
             SELECT
                 mt.CREATED AS created,

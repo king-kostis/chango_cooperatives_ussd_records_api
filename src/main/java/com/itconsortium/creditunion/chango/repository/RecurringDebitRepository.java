@@ -25,7 +25,7 @@ public interface RecurringDebitRepository extends JpaRepository<RecurringDebit, 
                 WHERE r.DEBIT_ACCOUNT_ID = :id
                 LIMIT 1
             """ , nativeQuery = true)
-    Optional<RecurringDebitSummary> findSubscriptionById(@Param("id") Long id);
+    Optional<RecurringDebitSummary> findRecurringDetailsById(@Param("id") Long id);
 
     @Query(value = """
                 SELECT DISTINCT
@@ -40,7 +40,7 @@ public interface RecurringDebitRepository extends JpaRepository<RecurringDebit, 
                 WHERE m.MSISDN = :msisdn
                 LIMIT 1
             """ , nativeQuery = true)
-    Optional<RecurringDebitSummary> findSubscriptionSummaryByMsisdn(@Param("msisdn") String msisdn);
+    Optional<RecurringDebitSummary> findRecurringDetailsByMsisdn(@Param("msisdn") String msisdn);
 
 
 }
