@@ -19,10 +19,10 @@ public interface RecurringDebitRepository extends JpaRepository<RecurringDebit, 
                    r.START_DATE AS startDate,
                    r.END_DATE AS endDate
                 FROM RECURRING_DEBITS r
-                INNER JOIN MEMBERS m ON r.DEBIT_ACCOUNT_ID = m.MEMBER_ID
-                INNER JOIN MEMBER_TRANSACTIONS mt ON mt.MEMBER_ID = m.MEMBER_ID
+                INNER JOIN MEMBERS m ON r.MEMBER_ID = m.MEMBER_ID
+                INNER JOIN TRANSACTIONS mt ON mt.MEMBER_ID = m.MEMBER_ID
                 INNER JOIN GROUPS g ON mt.GROUP_ID = g.GROUP_ID
-                WHERE r.DEBIT_ACCOUNT_ID = :id
+                WHERE r.MEMBER_ID = :id
                 LIMIT 1
             """ , nativeQuery = true)
     Optional<RecurringDebitSummary> findRecurringDetailsById(@Param("id") Long id);
@@ -34,13 +34,11 @@ public interface RecurringDebitRepository extends JpaRepository<RecurringDebit, 
                     r.START_DATE AS startDate,
                     r.END_DATE AS endDate
                 FROM RECURRING_DEBITS r
-                INNER JOIN MEMBERS m ON r.DEBIT_ACCOUNT_ID = m.MEMBER_ID
-                INNER JOIN MEMBER_TRANSACTIONS mt ON mt.MEMBER_ID = m.MEMBER_ID
+                INNER JOIN MEMBERS m ON r.MEMBER_ID = m.MEMBER_ID
+                INNER JOIN TRANSACTIONS mt ON mt.MEMBER_ID = m.MEMBER_ID
                 INNER JOIN GROUPS g ON mt.GROUP_ID = g.GROUP_ID
                 WHERE m.MSISDN = :msisdn
                 LIMIT 1
             """ , nativeQuery = true)
     Optional<RecurringDebitSummary> findRecurringDetailsByMsisdn(@Param("msisdn") String msisdn);
-
-
 }

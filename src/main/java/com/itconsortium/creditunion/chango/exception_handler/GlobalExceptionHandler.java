@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler(RecurringDebitsNotFoundException.class)
     public ResponseEntity<String> handleSubscriptionNotFound(RecurringDebitsNotFoundException e){
-        e.printStackTrace();
-        log.error(e.getMessage());
         return ResponseEntity.status(404).body(e.getMessage());
     }
 
@@ -25,13 +23,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoTransactionsAvailableException.class)
     public ResponseEntity<String> handleNoAvailableStatementException(NoTransactionsAvailableException e){
-        e.printStackTrace();
-        log.error(e.getMessage());
         return ResponseEntity.status(404).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception e){
+        e.printStackTrace();
+        log.error(e.getMessage());
         return ResponseEntity.status(500).body("Something went wrong in the server");
     }
 }

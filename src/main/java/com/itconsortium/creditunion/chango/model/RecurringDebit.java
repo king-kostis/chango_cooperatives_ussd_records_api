@@ -16,8 +16,9 @@ public class RecurringDebit {
     @Column(name = "DEBIT_TRANSACTION_ID")
     private Long debitTransactionId;
 
-    @Column(name = "DEBIT_ACCOUNT_ID")
-    private Long debitAccountId;
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 
     @Column(name = "DEBIT_AMOUNT")
     private double debitAmount;

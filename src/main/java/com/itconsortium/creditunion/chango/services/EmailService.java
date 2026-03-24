@@ -66,17 +66,17 @@ public class EmailService {
         for (var transaction : memberTransactionSummaryDtos) {
             emailMessage += "On " + transaction.getCreated() +
                     "\nTransaction Type: " + transaction.getTransactionType() +
-                    "\nAmount Transacted: " + transaction.getMemberCurrency() + " " + transaction.getAmount() + "\n\n";
+                    "\nAmount Transacted: " + transaction.getGroupCurrency() + " " + transaction.getAmount() + "\n\n";
         }
         return emailMessage;
     }
 
     public EmailResponseDto sendEmail(String emailAddress, Long groupId) {
-        Member member = memberRepository.findMemberByEmailAddress(emailAddress);
+        Member member = memberRepository.findMemberByEmail(emailAddress);
 
         String msisdn = member.getMsisdn();
         String emailMessage = getEmailMessage(getLast90DaysStatements(msisdn, groupId));
-        String memberName = member.getFirstName();
+        String memberName = member.getFirstName() + " " + member.getLastName();
 
         try {
             MailjetClient client = new MailjetClient(API_KEY_PUBLIC, API_KEY_PRIVATE, new ClientOptions("v3.1"));

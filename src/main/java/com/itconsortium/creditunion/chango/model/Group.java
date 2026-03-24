@@ -1,54 +1,73 @@
 package com.itconsortium.creditunion.chango.model;
 
+import com.itconsortium.creditunion.chango.enums.ActiveStatus;
+import com.itconsortium.creditunion.chango.enums.ApprovalStatus;
+import com.itconsortium.creditunion.chango.enums.GroupType;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
+@Table(name = "groups")
 @NoArgsConstructor
-@Table(name = "GROUPS")
+@AllArgsConstructor
+@Builder
 public class Group {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "GROUP_ID")
+    @Column(name = "group_id", nullable = false)
     private Long groupId;
 
-    @Column(name = "GROUP_NAME")
+    @Column(name = "group_name", nullable = false)
     private String groupName;
 
-    @Column(name = "GROUP_TYPE")
-    private String groupType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "group_type")
+    private GroupType groupType;
 
-    @Column(name = "GROUP_ICON_PATH")
+    @Column(name = "group_icon_path")
     private String groupIconPath;
 
-    @Column(name = "COUNTRY_ID")
-    private Long countryId;
+    @Column(name = "country_id")
+    private String countryId;
 
-    @Column(name = "CURRENCY")
+    @Column(name = "currency")
     private String currency;
 
-    @Column(name = "STATUS")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ActiveStatus status;
 
-    @Column(name = "APPROVE")
-    private String approve;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+    private ApprovalStatus approvalStatus;
 
-    @Column(name = "DESCRIPTION")
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "CREATOR_ID")
-    private Long creatorId;
+    @Column(name = "creator_id")
+    private String creatorId;
 
-    @Column(name = "CREATED")
-    private LocalDate created;
+    @Column(name = "created")
+    private LocalDateTime created;
 
-    @Column(name = "MODIFIED")
-    private LocalDate modified;
+    @Column(name = "modified")
+    private LocalDateTime modified;
 
-    @Column(name = "DELETED")
-    private LocalDate deleted;
+    @Builder.Default
+    @Column(name = "deleted")
+    private Boolean deleted = false;
+
+    @ElementCollection
+    @CollectionTable(name = "group_account_ids", joinColumns = @JoinColumn(name = "group_id"))
+    @Column(name = "account_id")
+    private Set<Long> accountIds;
+
+    @OneToMany(mappedBy = "group")
+    private List<Member> members;
 }
-
